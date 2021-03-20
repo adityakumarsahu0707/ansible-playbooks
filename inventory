@@ -1,0 +1,4 @@
+#192.168.43.86   ansible_user=root  ansible_ask_pass="redhat" ansible_connection=ssh
+
+[targets]
+target1

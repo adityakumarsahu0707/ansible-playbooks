@@ -1,0 +1,12 @@
+- hosts: all
+  tasks:
+          - name: Add docker yum repo 
+            yum_repository:
+                  name: docker
+                  description: docker-ce
+                  baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+                  gpgcheck: no
+
+          - name: Installing docker
+            command: "yum install docker-ce -y --nobest"
+            
