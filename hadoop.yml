@@ -1,16 +1,81 @@
+- hosts: all
+  tasks:
+          - name: Installing python in all nodes
+            yum:
+                    name: "python3-pip"
+                    state: present
+
+          - name: Installing and Updating pip
+            command: "pip3 install --upgrade pip"
+
+          - name: Installing Gdown
+            command:
+                    cmd: "pip3 install gdown"
+                    warn: no
+
+          - name: Downloading JDK installer
+            command:
+                    cmd: "gdown --id 17UWQNVdBdGlyualwWX4Cc96KyZhD-lxz"
+                    warn: no
+                    become: false
+                    remote_user: ec2-user
+
+          - name: Downloading Hadoop installer
+            command: "gdown --id 1541gbFeGZZJ5k9Qx65D04lpeNBw87rM5"
+
+          - name: Installing JDK software
+            command: "rpm -ivh jdk-8u171-linux-x64.rpm"
+
+          - name: Installing Hadoop software
+            command:
+                    cmd: "rpm -ivh hadoop-1.2.1-1.x86_64.rpm --force"
+                    warn: no
+
 - hosts: master
   tasks:
           - name: Creating directory in Namenode
-            files:
-                    path: /nn
+            file:
+                    path: "/nn"
                     state: directory
 
+          - name: Copying hdfs files in master
+            copy:
+                    src: "./masterfiles/hdfs-site.xml"
+                    dest: "/etc/hadoop/"
 
+          - name: Copying core files in master
+            copy:
+                    src: "./masterfiles/core-site.xml"
+                    dest: "/etc/hadoop/"
 
+          - name: Formatting Namenode
+            command:
+                    cmd: "hadoop namenode -format"
+                    warn: no
 
-
-
+          - name: Starting Namenode
+            command:
+                    cmd: "hadoop-daemon.sh start namenode"
+                    warn: no
 
 - hosts: datanode
   tasks:
           - name: Creating Directory in Datanode
+            file:
+                    path: "/dn"
+                    state: directory
+          
+          - name: Copying hdfs file in node
+            copy:
+                    src: "./nodefiles/hdfs-site.xml"
+                    dest: "/etc/hadoop/"
+          
+          - name: Copying core file in node
+            copy:
+                    src: "./nodefiles/core-site.xml"
+                    dest: "/etc/hadoop/"
+          
+          - name: Starting Datanode
+            command:
+                    cmd: "hadoop-daemon.sh start datanode"
+                    warn: no
