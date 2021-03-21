@@ -1,12 +1,51 @@
 - hosts: all
+  vars:
+          - c_name: "webserver1"
   tasks:
           - name: Add docker yum repo 
             yum_repository:
-                  name: docker
-                  description: docker-ce
-                  baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+                  name: "docker"
+                  baseurl: "https://download.docker.com/linux/centos/7/x86_64/stable/"
                   gpgcheck: no
+                  description: "Docker-install"
 
           - name: Installing docker
-            command: "yum install docker-ce -y --nobest"
-            
+            command: "yum install docker-ce --nobest -y"
+
+          - name: Installing Docker SDK
+            pip:
+                    name: docker-py
+
+          - name: Starting Docker service
+            service:
+                    name: docker
+                    state: started
+
+          - name: Pull Docker image for apache webserver
+            docker_image:
+                    name: httpd
+                    state: present
+          - name: Creates directory
+            file:
+                    path: /html
+                    state: directory  
+
+          - name: Copying html file
+            copy:
+                    src: "index.html"
+                    dest: "/html"
+
+          - name: Creating Docker container
+            docker_container:
+                    name: "{{ c_name  }}"
+                    image: "httpd"
+                    state: present
+                    exposed_ports:
+                            - 80/tcp
+                    published_ports:
+                            - 0.0.0.0:1234:80/tcp
+                    volumes:
+                            - "/html/:/usr/local/apache2/htdocs/"
+
+          - name: Starting docker container
+            command: "docker start {{ c_name }}"
