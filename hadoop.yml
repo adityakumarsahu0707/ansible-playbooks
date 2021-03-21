@@ -1,0 +1,16 @@
+- hosts: master
+  tasks:
+          - name: Creating directory in Namenode
+            files:
+                    path: /nn
+                    state: directory
+
+
+
+
+
+
+
+- hosts: datanode
+  tasks:
+          - name: Creating Directory in Datanode
