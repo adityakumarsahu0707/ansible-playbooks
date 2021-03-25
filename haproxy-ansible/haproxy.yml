@@ -1,0 +1,16 @@
+- hosts: localhost
+  vars_prompt:
+          - name: ip
+            prompt: "Enter ip : "
+            private: no
+          - name: port
+            prompt: "Enter port : "
+            private: no
+  tasks:
+          - lineinfile:
+                  path: 'conf-file/haproxy.cfg'
+                  regexp: '^server'
+                  line: '     server  app4 {{ ip }}:{{ port }} check'
+                  insertbefore: '^#    server  app1 157.240.23.35 check'
+                  
+
