@@ -1,0 +1,48 @@
+- hosts: master
+  tasks:
+          - name: Copying hdfs files in master
+            copy:
+                    src: "./masterfiles/hdfs-site.xml"
+                    dest: "/etc/hadoop/"
+
+          - name: Copying core files in master
+            copy:
+                    src: "./masterfiles/core-site.xml"
+                    dest: "/etc/hadoop/"
+
+          - name: Creating directory in namenode
+            file:
+                    path: /namemode
+                    state: directory
+
+          - name: Formatting Namenode
+            command:
+                    cmd: "echo Y | hadoop namenode -format"
+                    warn: no
+
+          - name: Starting Namenode
+            command:
+                    cmd: "hadoop-daemon.sh start namenode"
+                    warn: no
+
+- hosts: datanode
+  tasks:
+          - name: Creating Directory in Datanode
+            file:
+                    path: /datanode
+                    state: directory
+          
+          - name: Copying hdfs file in node
+            copy:
+                    src: "./nodefiles/hdfs-site.xml"
+                    dest: "/etc/hadoop/"
+          
+          - name: Copying core file in node
+            copy:
+                    src: "./nodefiles/core-site.xml"
+                    dest: "/etc/hadoop/"
+          
+          - name: Starting Datanode
+            command:
+                    cmd: "hadoop-daemon.sh start datanode"
+                    warn: no

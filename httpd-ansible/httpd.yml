@@ -1,0 +1,21 @@
+- hosts: all
+  tasks:
+          - name: installing httpd
+            yum:
+                    name: httpd
+                    state: present
+
+          - name: Copying conf file
+            copy:
+                    src: "./conf-file/httpd.conf"
+                    dest: "/etc/httpd/conf/"
+            register: output
+
+          - name: Starting service
+            service:
+                    name: httpd
+                    state: restarted
+
+          - name: output
+            debug:
+                    msg: "output.changed"

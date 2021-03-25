@@ -1,6 +1,0 @@
-[master]
-ec2-instance ansible_user=ec2-user ansible_host=13.234.239.232  ansible_ssh_private_key_file=/root/key/bcamarch.pem
-
-[datanode]
-ec2-instance ansible_user=ec2-user ansible_host=65.0.184.73 ansible_ssh_private_key_file=/root/key/bcamarch.pem
-

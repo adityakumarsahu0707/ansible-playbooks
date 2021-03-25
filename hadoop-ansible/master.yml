@@ -1,0 +1,6 @@
+- hosts: master
+  tasks:
+          - name: Folder
+            file:
+                    path: /nn
+                    state: directory
