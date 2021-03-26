@@ -1,0 +1,13 @@
+- hosts: localhost
+  tasks:
+          - name: Configuring Load Balancer
+            copy:
+                    src: "./conf-file/haproxy.cfg"
+                    dest: "/etc/haproxy/haproxy.cfg"
+
+          - name: Restarting Load Balancer
+            service:
+                    name: haproxy
+                    state: restarted
+
+

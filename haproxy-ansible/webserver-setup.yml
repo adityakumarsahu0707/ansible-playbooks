@@ -1,0 +1,20 @@
+- hosts: proxyservers
+  vars:
+          packages:
+                  - httpd
+                  - php
+  tasks:
+          - name: Installing Softwares
+            yum:
+                    name: "{{ packages }}"
+                    state: present
+
+          - name: Cooking Webpages for our server
+            copy:
+                    src: "./conf-file/index.php"
+                    dest: "/var/www/html/"
+
+          - name: Starting WebServer
+            service:
+                    name: httpd
+                    state: started

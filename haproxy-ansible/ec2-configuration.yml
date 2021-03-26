@@ -7,7 +7,7 @@
           - sg: sg-02a140eb95ffc2389
   vars_prompt:
           name: "instance_name"
-          prompt: "Give a name to Ec2 Instance "
+          prompt: "Give sever name "
           private: no
   tasks:
           - name: Creating new instance
@@ -20,10 +20,9 @@
                     region: "{{ region }}"
                     wait: yes
                     vpc_subnet_id: "subnet-611c1509"
-
             register: os
 
-          - name: Public IP
+          - name: IP of Launched Instance
             debug:
                     var:  os.instances[0].public_ip_address
 
@@ -32,11 +31,11 @@
                   path: 'conf-file/haproxy.cfg'
                   regexp: '^server'
                   line: '     server  app{{ instance_name }} {{ os.instances[0].public_ip_address }}:80 check'
-                  insertbefore: '^#    server  app1 157.240.23.35 check' 
+                  insertbefore: '#    server  app1 127.0.0.1:5001 check' 
           
           - name: Updating local Inventory
             lineinfile:
                   path: './inventory'
                   regexp: '^proxyservers'
-                  line: '{{ os.instances[0].public_ip_address }} ansible_user= ec2-user ansible_host={{ os.instances[0].public_ip_address }} ansible_ssh_private_key_file=/root/key/{{ key }} host_key_checking=false'
+                  line: '{{ os.instances[0].public_ip_address }}'
                   insertafter: '[proxyservers]' 
