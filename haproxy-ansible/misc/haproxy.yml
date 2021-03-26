@@ -13,4 +13,10 @@
                   line: '     server  app4 {{ ip }}:{{ port }} check'
                   insertbefore: '^#    server  app1 157.240.23.35 check'
                   
+          - blockinfile:
+                 block: |
+                         [backend]
+                         os1.instances[0].pub_ip
+                         os2.instances[0].pub_ip
+                         os3.instances[0].pub_ip
 

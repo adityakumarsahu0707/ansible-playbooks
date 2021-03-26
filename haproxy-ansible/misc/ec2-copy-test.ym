@@ -1,0 +1,38 @@
+- hosts: localhost
+  vars:
+          - key: "adi_key_march"
+          - type: t2.micro
+          - image: ami-068d43a544160b7ef
+          - region: ap-south-1
+          - sg: sg-02a140eb95ffc2389
+          - t:
+                  - 0
+                  - 1
+
+  tasks:
+          - name: Creating new instance
+            ec2_instance:
+                    name: "test"
+                    security_group: "{{ sg }}"
+                    key_name: "{{ key }}"
+                    instance_type: "{{ type }}"
+                    image_id : "{{ image }}"
+                    region: "{{ region }}"
+                    wait: yes
+                    vpc_subnet_id: "subnet-611c1509"
+
+            register: os
+
+          - name: Public IP
+            debug:
+                    var:  os.instances[0].public_ip_address
+
+          - name: info
+            ec2_instance_info:
+                    filters:
+                            "tag:Name": test
+            register: infoo
+
+          - debug:
+                  msg: "{{ infoo.instances[ \"{{ t.index }}\" ].private_ip_address }}"
+            loop: "{{ t }}" 
