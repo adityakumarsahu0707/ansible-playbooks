@@ -1,0 +1,7 @@
+package:
+        - "apache2"
+        - "php"
+service:
+        - apache2
+
+

@@ -1,0 +1,9 @@
+<body bgcolor=#F6B915>
+<pre>
+<?php
+echo "<h1>This is  {{ ansible_facts.distribution }}:{{ ansible_facts.distribution_version }} distribution webserver </h1> <br /> <br />";
+$ip=shell_exec("/sbin/ifconfig");
+echo "<b>$ip</b>";
+?>
+</pre>
+</body>
