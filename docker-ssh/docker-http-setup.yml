@@ -1,0 +1,18 @@
+- hosts: docker
+  vars:
+          - pkg:
+                  - "httpd"
+  tasks:
+          - name: Installing packages
+            package:
+                    name: "{{ item }}"
+                    state: present
+            loop: "{{ pkg }}"
+
+          - name: Copying webpage
+            copy:
+                    src: "./index.html"
+                    dest: "/var/www/html/index.html"
+
+          - name: start httpd service
+            command: /usr/sbin/httpd 

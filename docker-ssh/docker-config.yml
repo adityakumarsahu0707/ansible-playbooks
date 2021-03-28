@@ -1,8 +1,11 @@
 - hosts: localhost
+  vars_prompt:
+          - name: c_name
+            prompt: "Give your container a good name "
+            private: no
   vars:
-          - c_name: "ssh_os1"
-          - c_image: "ealegei/ssh_image"
-          - version: "latest"
+          - c_image: "aditya0707/ssh_image"
+          - version: "v1"
 
   tasks:
           - name: Creating Docker Repository
@@ -21,9 +24,14 @@
             docker_container:
                     name: "{{ c_name }}"
                     image: "{{ c_image }}:{{ version }}"
-                    detach: True
-                    command: sleep infinity
+                    tty: yes
+                    interactive: yes
+                    published_ports:                      
+                            - 0.0.0.0:1234:80/tcp
+                    exposed_ports:
+                            - 80/tcp
                     state: started
+
             register: output
 
           - name: IP of the launched container
@@ -35,7 +43,14 @@
                     path: "./inventory"
                     block: |
                             [docker]
-                            {{ output.container.NetworkSettings.IPAddress }}
+                            {{ output.container.NetworkSettings.IPAddress }}  ansible_ssh_user=root ansible_ssh_pass='redhat'
+          - name: Cooking Webpage
+            template:
+                    src: "./index.php.j2"
+                    dest: "./index.html"
+
+          - pause:
+                  seconds: 5
 
   handlers:
           - name: install_docker
@@ -46,4 +61,3 @@
             service:
                     name: docker
                     state: restarted
-
