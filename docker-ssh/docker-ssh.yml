@@ -1,0 +1,49 @@
+- hosts: localhost
+  vars:
+          - c_name: "ssh_os1"
+          - c_image: "ealegei/ssh_image"
+          - version: "latest"
+
+  tasks:
+          - name: Creating Docker Repository
+            yum_repository:
+                  name: "docker"
+                  baseurl: "https://download.docker.com/linux/centos/7/x86_64/stable/"
+                  gpgcheck: no
+                  description: "Docker-install"
+            notify: install_docker
+
+          - name: Installing Docker SDK
+            pip:
+                    name: docker-py
+
+          - name: Creating Docker container
+            docker_container:
+                    name: "{{ c_name }}"
+                    image: "{{ c_image }}:{{ version }}"
+                    detach: True
+                    command: sleep infinity
+                    state: started
+            register: output
+
+          - name: IP of the launched container
+            debug:
+                    msg: "{{ output.ansible_facts['docker_container'].NetworkSettings['IPAddress'] }}"
+
+          - name: Updating inventory
+            blockinfile:
+                    path: "./inventory"
+                    block: |
+                            [docker]
+                            {{ output.container.NetworkSettings.IPAddress }}
+
+  handlers:
+          - name: install_docker
+            command: "yum install docker-ce --nobest -y"
+            notify: restart
+
+          - name: restart
+            service:
+                    name: docker
+                    state: restarted
+
