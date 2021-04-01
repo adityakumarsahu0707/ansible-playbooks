@@ -27,3 +27,6 @@
           line: '{{ os.instances[0].public_ip_address }}  ansible_private_key_file=/root/key/adi_key_march.pem  ansible_ssh_user=ec2-user'
           insertbefore: '[server]' 
 
+- name: Waiting till instance get's ready
+  pause:
+          minutes: 2
