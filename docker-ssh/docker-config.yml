@@ -16,9 +16,11 @@
                   description: "Docker-install"
             notify: install_docker
 
-          - name: Installing Docker SDK
-            pip:
-                    name: docker-py
+          - name: Starting Docker services
+            service:
+                    name: docker
+                    state: restarted
+                    enabled: yes
 
           - name: Creating Docker container
             docker_container:
@@ -61,3 +63,8 @@
             service:
                     name: docker
                     state: restarted
+            notify: Installing Docker SDK
+
+          - name: Installing Docker SDK
+            pip:
+                    name: docker-py
