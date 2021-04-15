@@ -15,10 +15,10 @@
   register: master
 - name: Updating local Inventory
   lineinfile:
-          path: '/ansible-playbooks/k8s-multinode-cluster/inventory'
+          path: '{{ inventory_path }}'
           regexp: '^masternode'
-          line: '{{ master.instances[0].public_ip_address }}  ansible_private_key_file=/root/key/adi_key_march.pem  ansible_ssh_user=ec2-user'
-          insertbefore: '[masternode]'
+          line: '{{ master.instances[0].public_ip_address }}  ansible_private_key_file={{ key_path }}  ansible_ssh_user=ec2-user'
+          insertafter: '[masternode]'
 
 - name: K8s Worker Node creation
   ec2_instance:
@@ -33,6 +33,12 @@
           vpc_subnet_id: "{{ subnet }}"  
   register: slave
 
+- name: Updating local Inventory
+  lineinfile:
+          path: '{{ inventory_path }}'
+          regexp: '^slavenode'
+          line: '{{ slave.instances[0].public_ip_address }}  ansible_private_key_file={{ key_path }}  ansible_ssh_user=ec2-user'
+          insertafter: '[slavenode]'
 - name: Print Worker node
   debug:
           msg: "{{ slave }}"
