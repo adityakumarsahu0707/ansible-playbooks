@@ -1,0 +1,23 @@
+- hosts: master
+  tasks:
+          - name: Copying core files in master
+            copy:
+                    src: "./masterfiles/mapred-site.xml"
+                    dest: "/etc/hadoop/"
+
+          - name: Starting Jobtracker
+            command:
+                    cmd: "hadoop-daemon.sh start jobtracker"
+                    warn: no
+
+- hosts: datanode
+  tasks:
+          - name: Copying tasktracker file in node
+            template:
+                    src: "./nodefiles/mapred-site.xml"
+                    dest: "/etc/hadoop/"
+          
+          - name: Starting Tasktracker
+            command:
+                    cmd: "hadoop-daemon.sh start tasktracker"
+                    warn: no
