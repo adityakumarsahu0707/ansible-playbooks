@@ -1,0 +1,54 @@
+- hosts: all
+  tasks:
+          - name: Installing python
+            yum:
+                    name: "python3-pip"
+                    state: present
+            notify: copy_jdk
+
+  handlers:
+          - name: copy_jdk
+            copy:
+                    src: "/files/jdk-8u171-linux-x64.rpm"
+                    dest: "~/"
+            notify: copy_hadoop
+
+          - name: copy_hadoop
+            copy:
+                    src: "/files/hadoop-1.2.1-1.x86_64.rpm"
+                    dest: "~/"
+
+- hosts: all
+  tasks:
+          - name: Installing jdk
+            command:
+                    cmd: "rpm -ivh ~/jdk-8u171-linux-x64.rpm"
+                    warn: no
+          - name: Installing hadoop
+            command:
+                    cmd: "rpm -ivh ~/hadoop-1.2.1-1.x86_64.rpm --force"
+                    warn: no
+
+- hosts: jobtracker
+  tasks:
+          - name: Copying required files in Job Tracker
+            template:
+                    src: "./masterfiles/mapred-site.xml"
+                    dest: "/etc/hadoop/mapred-site.xml"
+
+          - name: Starting Jobtracker
+            command:
+                    cmd: "sudo hadoop-daemon.sh start jobtracker"
+                    warn: no
+
+- hosts: tasktracker
+  tasks:
+          - name: Copying tasktracker file to all Task Tracker nodes
+            template:
+                    src: "./nodefiles/mapred-site.xml"
+                    dest: "/etc/hadoop/mapred-site.xml"
+          
+          - name: Starting Tasktracker
+            command:
+                    cmd: "sudo hadoop-daemon.sh start tasktracker"
+                    warn: no

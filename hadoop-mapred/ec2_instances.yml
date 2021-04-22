@@ -1,0 +1,90 @@
+- hosts: localhost
+  vars:
+          - key: "aws-bca-newfeb"
+          - type: t2.micro
+          - image: ami-0bcf5425cdc1d8a85
+          - region: ap-south-1
+          - sg: sg-02a140eb95ffc2389
+          - subnet: subnet-3a1a0152
+  tasks:
+          - name: Creating instance for Job-Tracker
+            ec2_instance:
+                    name: "Job-Tracker"
+                    security_group: "{{ sg }}"
+                    key_name: "{{ key }}"
+                    instance_type: "{{ type }}"
+                    image_id : "{{ image }}"
+                    region: "{{ region }}"
+                    wait: yes
+                    vpc_subnet_id: "{{ subnet }}"
+            register: master
+
+          - name: Updating local Inventory
+            lineinfile:
+                  path: './inventory'
+                  regexp: '^jobtracker'
+                  line: '{{ master.instances[0].public_ip_address }}  ansible_ssh_user=ec2-user'
+                  insertafter: '[jobtracker]'
+
+          - name: Updating file required for Task Trackers
+            template:
+                    src: "./nodefiles/mapred-site.xml.j2"
+                    dest: "./nodefiles/mapred-site.xml"
+
+          - name: Creating instance for Task-Tracker1
+            ec2_instance:
+                    name: "Task-Tracker1"
+                    security_group: "{{ sg }}"
+                    key_name: "{{ key }}"
+                    instance_type: "{{ type }}"
+                    image_id : "{{ image }}"
+                    region: "{{ region }}"
+                    wait: yes
+                    vpc_subnet_id: "{{ subnet }}"
+            register: tt1
+
+          - name: Updating local Inventory
+            lineinfile:
+                  path: './inventory'
+                  regexp: '^tasktracker'
+                  line: '{{ tt1.instances[0].public_ip_address }}  ansible_ssh_user=ec2-user'
+                  insertafter: '[tasktracker]'
+
+          - name: Creating instance for Task-Tracker2
+            ec2_instance:
+                    name: "Task-Tracker2"
+                    security_group: "{{ sg }}"
+                    key_name: "{{ key }}"
+                    instance_type: "{{ type }}"
+                    image_id : "{{ image }}"
+                    region: "{{ region }}"
+                    wait: yes
+                    vpc_subnet_id: "{{ subnet }}"
+            register: tt2
+
+          - name: Updating local Inventory
+            lineinfile:
+                  path: './inventory'
+                  regexp: '^tasktracker'
+                  line: '{{ tt2.instances[0].public_ip_address }}  ansible_ssh_user=ec2-user'
+                  insertafter: '[tasktracker]'
+
+          - name: Creating instance for Task-Tracker3
+            ec2_instance:
+                    name: "Task-Tracker3"
+                    security_group: "{{ sg }}"
+                    key_name: "{{ key }}"
+                    instance_type: "{{ type }}"
+                    image_id : "{{ image }}"
+                    region: "{{ region }}"
+                    wait: yes
+                    vpc_subnet_id: "{{ subnet }}"
+            register: tt3
+
+          - name: Updating local Inventory
+            lineinfile:
+                  path: './inventory'
+                  regexp: '^tasktracker'
+                  line: '{{ tt3.instances[0].public_ip_address }}  ansible_ssh_user=ec2-user'
+                  insertafter: '[tasktracker]'
+

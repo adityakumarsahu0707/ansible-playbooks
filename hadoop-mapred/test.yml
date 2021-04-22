@@ -1,0 +1,19 @@
+- hosts : all
+  become: false
+  tasks:
+          - name: Installing jdk
+            copy:
+                    src: "./files/hadoop-1.2.1-1.x86_64.rpm"
+                    dest: "~/"
+          - name: Install hadoop
+            command:
+                    cmd: "rpm -ivh ~/hadoop-1.2.1-1.x86_64.rpm --force"
+                    warn: no
+
+- hosts: all
+  tasks:
+          - name: hello
+            yum:
+                    name: httpd
+                    state: present
+

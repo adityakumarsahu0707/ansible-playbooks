@@ -6,7 +6,7 @@
 <configuration>
 <property>
 <name>mapred.job.tracker</name>
-<value>{{ master }}:1234</value>
+<value>{{ master.instances[0].public_ip_address }}:1234</value>
 </property>
 </configuration>
 
