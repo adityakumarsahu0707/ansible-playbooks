@@ -4,7 +4,7 @@
           - type: t2.micro
           - image: ami-0bcf5425cdc1d8a85
           - region: ap-south-1
-          - sg: sg-02a140eb95ffc2389
+          - sg: sg-0452fc8243cc162d1
           - subnet: subnet-3a1a0152
   tasks:
           - name: Creating instance for Job-Tracker
@@ -16,15 +16,16 @@
                     image_id : "{{ image }}"
                     region: "{{ region }}"
                     wait: yes
+                    wait_timeout: 100
                     vpc_subnet_id: "{{ subnet }}"
             register: master
 
           - name: Updating local Inventory
             lineinfile:
-                  path: './inventory'
-                  regexp: '^jobtracker'
+                  path: './inventory_aws'
+                  regexp: '^tasktracker'
                   line: '{{ master.instances[0].public_ip_address }}  ansible_ssh_user=ec2-user'
-                  insertafter: '[jobtracker]'
+                  insertbefore: '[tasktracker]'
 
           - name: Updating file required for Task Trackers
             template:
@@ -40,12 +41,13 @@
                     image_id : "{{ image }}"
                     region: "{{ region }}"
                     wait: yes
+                    wait_timeout: 100
                     vpc_subnet_id: "{{ subnet }}"
             register: tt1
 
           - name: Updating local Inventory
             lineinfile:
-                  path: './inventory'
+                  path: './inventory_aws'
                   regexp: '^tasktracker'
                   line: '{{ tt1.instances[0].public_ip_address }}  ansible_ssh_user=ec2-user'
                   insertafter: '[tasktracker]'
@@ -59,12 +61,13 @@
                     image_id : "{{ image }}"
                     region: "{{ region }}"
                     wait: yes
+                    wait_timeout: 100
                     vpc_subnet_id: "{{ subnet }}"
             register: tt2
 
           - name: Updating local Inventory
             lineinfile:
-                  path: './inventory'
+                  path: './inventory_aws'
                   regexp: '^tasktracker'
                   line: '{{ tt2.instances[0].public_ip_address }}  ansible_ssh_user=ec2-user'
                   insertafter: '[tasktracker]'
@@ -78,12 +81,13 @@
                     image_id : "{{ image }}"
                     region: "{{ region }}"
                     wait: yes
+                    wait_timeout: 100
                     vpc_subnet_id: "{{ subnet }}"
             register: tt3
 
           - name: Updating local Inventory
             lineinfile:
-                  path: './inventory'
+                  path: './inventory_aws'
                   regexp: '^tasktracker'
                   line: '{{ tt3.instances[0].public_ip_address }}  ansible_ssh_user=ec2-user'
                   insertafter: '[tasktracker]'

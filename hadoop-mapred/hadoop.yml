@@ -1,4 +1,5 @@
 - hosts: all
+  gather_facts: false
   tasks:
           - name: Installing python
             yum:
@@ -19,6 +20,7 @@
                     dest: "~/"
 
 - hosts: all
+  gather_facts: false
   tasks:
           - name: Installing jdk
             command:
@@ -30,6 +32,7 @@
                     warn: no
 
 - hosts: jobtracker
+  gather_facts: false
   tasks:
           - name: Copying required files in Job Tracker
             template:
@@ -42,6 +45,7 @@
                     warn: no
 
 - hosts: tasktracker
+  gather_facts: false
   tasks:
           - name: Copying tasktracker file to all Task Tracker nodes
             template:
