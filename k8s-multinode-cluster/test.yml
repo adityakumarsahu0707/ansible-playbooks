@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: all
   vars:
           - node:
                   - Worker1
@@ -7,3 +7,4 @@
           - debug:
                   msg: "{{ item }}"
             loop: "{{ node }}" 
+            when: inventory_hostname in groups['masternode']

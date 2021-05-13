@@ -1,6 +1,6 @@
 ---
 # vars file for ec2
-image: "ami-0a9d27a9f4f5c0efc"
+image: "ami-010aff33ed5991201"
 type: "t2.micro"
 sg: "sg-02a140eb95ffc2389"
 key: "adi_key_march"
