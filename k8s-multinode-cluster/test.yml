@@ -1,10 +1,17 @@
-- hosts: all
-  vars:
-          - node:
-                  - Worker1
-                  - Worker2
+- hosts: masternode
   tasks:
-          - debug:
-                  msg: "{{ item }}"
-            loop: "{{ node }}" 
-            when: inventory_hostname in groups['masternode']
+          - name: Setting Up Flannel for Tunneling
+            command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+            become: false
+
+          - name: Getting join command
+            shell: "kubeadm token create --print-join-command"
+            register: join
+
+- hosts: slavenode
+  tasks:
+          - name: Executing Join Command
+            command: "{{ hostvars[item]['join']['stdout'] }}"
+            with_items: "{{ groups['masternode'] }}"
+            ignore_errors: yes
+

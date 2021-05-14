@@ -52,7 +52,7 @@
 
 - name: Starting K8s master
   command:
-          cmd: "kubeadm init --pod-network-cidr=10.240.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
+          cmd: "kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
           warn: no
   ignore_errors: yes
   when: inventory_hostname in groups['masternode']
@@ -75,37 +75,3 @@
           warn: no
   become: false
   when: inventory_hostname in groups['masternode']
-
-- name: Getting join command 
-  command:
-          cmd: "kubeadm token create  --print-join-command"
-  register: join
-  when: inventory_hostname in groups['masternode']
-
-- name: Join file
-  blockinfile:
-          path: "join_command.txt"
-          block: |
-                  {{ join.stdout }}
-  when: inventory_hostname in groups['masternode']
-
-- name: Fetching Join file
-  fetch:
-          src: "join_command.txt"
-          dest: "/ansible-playbooks/k8s-multinode-cluster/roles/cluster/files/join_command.sh"
-  ignore_errors: yes
-  when: inventory_hostname in groups['masternode']
-
-- name: Copying join script
-  copy:
-          src: "join_command.sh"
-          dest: "./"
-  when: inventory_hostname in groups['slavenode']
-
-- name: Getting join ready
-  command:
-          cmd:
-                  - "sudo chmod +x ~/join_command.sh"
-                  - "sh ~/join_command.sh"
-  become: false
-  when: inventory_hostname in groups['slavenode']
